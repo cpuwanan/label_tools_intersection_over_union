@@ -1,0 +1,12 @@
+iou:
+  meta_data_file: /mnt/mydata/Documents/yolo_v4/darknet/cfg/colgate_ndc.data
+  darknet_root: /mnt/mydata/Documents/yolo_v4/darknet
+  image_filetype: ".jpg"
+
+yolo:
+  weights_file: /mnt/mydata/Documents/yolo_v4/darknet/output_weights/colgate_yolov3-tiny/yolov3-tiny-colgate_2_final.weights
+  cfg_file: /mnt/mydata/Documents/yolo_v4/darknet/cfg/yolov3-tiny-colgate_2.cfg
+  net_width: 416
+  net_height: 416
+  confidence_thr: 0.5
+  nms_thr: 0.3
