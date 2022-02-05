@@ -1,8 +1,0 @@
-classes= 80
-train  = /mnt/mydata/Documents/yolo_v4/darknet/data/colgate_2/train.txt
-valid  = /mnt/mydata/Documents/yolo_v4/darknet/data/colgate_2/test.txt
-#valid = data/coco_val_5k.list
-names = /mnt/mydata/Documents/yolo_v4/darknet/data/coco.names
-backup = /home/pjreddie/backup/
-eval=coco
-
