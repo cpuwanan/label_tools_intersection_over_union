@@ -1,0 +1,12 @@
+iou:
+  meta_data_file: /robot/darknet/cfg/warehouse.data
+  darknet_root: /robot/darknet
+  image_filetype: ".jpg"
+
+yolo:
+  weights_file: /robot/darknet/output_weights/warehouse_yolov3-tiny/yolov3-tiny-warehouse_final.weights
+  cfg_file: /robot/darknet/cfg/yolov3-tiny-warehouse.cfg
+  net_width: 416
+  net_height: 416
+  confidence_thr: 0.5
+  nms_thr: 0.3
