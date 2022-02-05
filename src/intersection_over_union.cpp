@@ -89,14 +89,14 @@ public:
 		}
 
 		// ### Reading subfix
-		std::string subfix = "darknet_root";
+		std::string subfix = "image_root";
 		if (!data[subfix]) {
 			std::cout << " " << utils::colorText(TextType::DANGER_B, cv::format("Failed loading param '%s/%s'", header.c_str(), subfix.c_str())) << std::endl;
 			return false;
 		} else {
-			darknet_root_ = data[subfix].as<std::string>();
-			if (!utils::isValidPath(darknet_root_)) {
-				std::cout << " " << utils::colorText(TextType::DANGER_B, cv::format("Invalid path: %s", darknet_root_.c_str())) << std::endl;
+			image_root_ = data[subfix].as<std::string>();
+			if (!utils::isValidPath(image_root_)) {
+				std::cout << " " << utils::colorText(TextType::DANGER_B, cv::format("Invalid path: %s", image_root_.c_str())) << std::endl;
 				return false;
 			}
 			std::cout << " Successfully read params: " << utils::colorText(TextType::SUCCESS_B, cv::format("%s/%s", header.c_str(), subfix.c_str())) << std::endl;
@@ -267,19 +267,20 @@ private:
 	
 	bool loadTestImageFilenames(YAML::Node node, std::string image_filetype) {
 				
-		if (darknet_root_ == "") {
-			std::cout << " -- " << utils::colorText(TextType::DANGER_B, "darknet_root cannot be empty") << std::endl;
+		if (image_root_ == "") {
+			std::cout << " -- " << utils::colorText(TextType::DANGER_B, "image_root_ cannot be empty") << std::endl;
 			return false;
 		}
 		
 		std::string path = node.as<std::string>();
 		if (!utils::isValidPath(path)) {
-			std::cout << " |-- " << utils::colorText(TextType::DANGER_B, "Invalid path: " + path) << std::endl;
+			std::cout << " |-- Invalid path: " << utils::colorText(TextType::DANGER_B, path) << std::endl;
 			return false;
 		}
 		
 		std::ifstream reader;
 		reader.open(path);
+		std::cout << "Reading a file " << utils::colorText(TextType::SUCCESS_B, path) << std::endl;
 		std::string filename = "";
 		if (reader.is_open()) {
 			std::string line;
@@ -304,7 +305,7 @@ private:
 			std::cout << " -- " << utils::colorText(TextType::DANGER_B, "Path for 'test.txt' cannot be empty") << std::endl;
 			return false;
 		} else {
-			filename = darknet_root_ + "/" + filename;
+			std::cout << "Test image filename: " << filename << std::endl;
 			if (!utils::isValidPath(filename)) {
 				std::cout << " |-- " << utils::colorText(TextType::DANGER_B, "Invalid path: " + filename) << std::endl;
 				return false;
@@ -318,13 +319,18 @@ private:
 		if (reader.is_open()) {
 			std::string line;
 			while (std::getline(reader, line)) {
-				std::size_t found = line.find(test_file_prefix_);
-				if (found != std::string::npos) {
+				if (line.size() > 0) {
 					MyImageInfo item;
-					item.path = darknet_root_ + "/" + line;
-					int length = line.size() - test_file_prefix_.size();
-					item.name = line.substr(test_file_prefix_.size(), length);
+					bool done = false;
+					for (int i=line.size() - 1; i>=0 && !done; i--) {
+						if (line[i] == '/') {
+							done = true;
+							item.name = line.substr(i + 1, line.size() - i - 1);
+						}
+					}
+					item.path = image_root_ + "/" + line;
 					item.image = cv::imread(item.path, cv::IMREAD_COLOR);
+					std::cout << "Name: " << item.name << "\t(Size: " << item.image.cols << "x" << item.image.rows << ")" << std::endl;
 					if (!item.image.empty()) {
 						item.labels = this->getBoundingBox(item.path, image_filetype, item.image.size());
 						test_images_.push_back(item);
@@ -401,7 +407,6 @@ private:
 			std::cout << " -- " << utils::colorText(TextType::DANGER_B, "Path for '.names' cannot be empty") << std::endl;
 			return false;
 		} else {
-			filename = darknet_root_ + "/" + filename;
 			if (!utils::isValidPath(filename)) {
 				std::cout << " |-- " << utils::colorText(TextType::DANGER_B, "Invalid path: " + filename) << std::endl;
 				return false;
@@ -491,7 +496,7 @@ private:
 	}
 	
 	bool is_ok_;
-	std::string darknet_root_;
+	std::string image_root_;
 	std::string test_file_prefix_;
 	std::vector<MyImageInfo> test_images_;
 	std::map<int, std::string> classnames_;
